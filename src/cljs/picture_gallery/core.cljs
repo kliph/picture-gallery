@@ -7,6 +7,7 @@
             [markdown.core :refer [md->html]]
             [picture-gallery.ajax :refer [load-interceptors!]]
             [picture-gallery.components.common :as c]
+            [picture-gallery.components.registration :as reg]
             [ajax.core :refer [GET POST]])
   (:import goog.History))
 
@@ -57,7 +58,6 @@
 
 (defn page []
   [:div
-   [c/modal "I'm a Modal" [:p "this is the body"] "this is a footer"]
    [(pages (session/get :page))]])
 
 ;; -------------------------
@@ -83,8 +83,6 @@
 
 ;; -------------------------
 ;; Initialize app
-(defn fetch-docs! []
-  (GET (str js/context "/docs") {:handler #(session/put! :docs %)}))
 
 (defn mount-components []
   (r/render [#'navbar] (.getElementById js/document "navbar"))
@@ -92,6 +90,5 @@
 
 (defn init! []
   (load-interceptors!)
-  (fetch-docs!)
   (hook-browser-navigation!)
   (mount-components))
