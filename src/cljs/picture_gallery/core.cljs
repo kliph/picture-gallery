@@ -6,6 +6,7 @@
             [goog.history.EventType :as HistoryEventType]
             [markdown.core :refer [md->html]]
             [picture-gallery.ajax :refer [load-interceptors!]]
+            [picture-gallery.components.common :as c]
             [ajax.core :refer [GET POST]])
   (:import goog.History))
 
@@ -55,7 +56,9 @@
    :about #'about-page})
 
 (defn page []
-  [(pages (session/get :page))])
+  [:div
+   [c/modal "I'm a Modal" [:p "this is the body"] "this is a footer"]
+   [(pages (session/get :page))]])
 
 ;; -------------------------
 ;; Routes
