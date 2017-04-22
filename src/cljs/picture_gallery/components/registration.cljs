@@ -12,7 +12,8 @@
                {:params @fields
                 :handler #(do
                             (session/put! :identity (:id @fields))
-                            (reset! fields {}))
+                            (reset! fields {})
+                            (session/remove! :modal))
                 :error-handler #(reset!
                                  errors
                                  {:server-error (get-in % [:response :message])})})))
@@ -27,8 +28,14 @@
         [:div.well.well-sm
          [:strong "* required field"]]
         [c/text-input "name" :id "enter a user name" fields]
+        (when-let [error (first (:id @error))]
+          [:div.alert.alert-danger error])
         [c/password-input "password" :pass "enter a password" fields]
-        [c/password-input "password" :pass-confirm "confirm the password" fields]
+        (when-let [error (first (:pass @error))]
+          [:div.alert.alert-danger error])
+        [c/password-input "password confirmation" :pass-confirm "confirm the password" fields]
+        (when-let [error (first (:server-error @error))]
+          [:div.alert.alert-danger error])
         (when-let [error (:server-error @error)]
           [:div.alert.alert-danger error])]
        [:div
