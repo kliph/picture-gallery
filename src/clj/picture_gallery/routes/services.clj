@@ -19,6 +19,15 @@
              :data {:info {:version "1.0.0"
                            :title "Picture Gallery"
                            :description "Public Services"}}}}
+  (POST "/login" req
+        :header-params [authorization :- String]
+        :summary "log in the user and create a session"
+        :return Result
+        (auth/login! req authorization))
+  (POST "/logout" []
+        :summary "remove user session"
+        :return Result
+        (auth/logout!))
   (POST "/register" req
         :return Result
         :body [user UserRegistration]
