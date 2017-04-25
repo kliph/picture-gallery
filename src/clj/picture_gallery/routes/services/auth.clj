@@ -34,3 +34,33 @@
           (assoc :session (assoc session :identity (:id user))))
       (catch Exception e
         (handle-registration-error e)))))
+
+(defn decode-auth [encoded]
+  (let [auth (second (.split encoded " "))]
+    (-> (.decode (java.util.Base64/getDecoder) auth)
+        (String. (java.nio.charset.Charset/forName "UTF-8"))
+        (.split ":"))))
+
+(defn authenticate [[id pass]]
+  (when-let [user (db/get-user {:id id})]
+    (when (hashers/check pass (:pass user))
+      id)))
+
+(defn login! [{:keys [session]} auth]
+  (if-let [id (authenticate (decode-auth auth))]
+    (-> {:result :ok}
+        (response/ok)
+        (assoc :session (assoc session :identity id)))
+    (response/unauthorized {:result :unauthorized-handler
+                            :message "login failure"})))
+
+(defn logout! []
+  (-> {:result :ok}
+      (response/ok)
+      (assoc :session nil)))
+
+(defn encode-basic-auth [username password]
+  (->> (str username ":" password)
+       .getBytes
+       (.encodeToString (java.util.Base64/getEncoder))
+       (str "Basic ")))
